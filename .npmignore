@@ -1,0 +1,8 @@
+src/
+coverage/
+tests/
+*.test.*
+.*
+tsconfig.json
+*.config.js
+Dockerfile

@@ -1,0 +1,56 @@
+{
+  "name": "integreat-authenticator-jwt",
+  "version": "0.1.0",
+  "description": "JWT authenticator for Integreat",
+  "author": "Kjell-Morten Bratsberg Thorsen <post@kjellmorten.no>",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "start": "npm run build && node lib/index.js",
+    "test": "npm run lint && npm run build && nyc --reporter=text-summary ava --config ./ava-dist.config.js",
+    "test:watch": "npm run dev",
+    "test:inspect": "node --inspect node_modules/ava/profile.js",
+    "dev": "ava --watch",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "nyc:report": "nyc report",
+    "lint": "eslint --ext .ts src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/integreat/integreat-authenticator-jwt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/integreat/integreat-authenticator-jwt/issues"
+  },
+  "homepage": "https://github.com/integreat/integreat-authenticator-jwt#readme",
+  "engines": {
+    "node": ">= 8.6",
+    "npm": ">= 5.4"
+  },
+  "dependencies": {
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/ms": "^0.7.31",
+    "dot-prop": "^5.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "ms": "^2.1.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
+    "ava": "^2.4.0",
+    "coveralls": "^3.0.7",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-security": "^1.4.0",
+    "integreat": "^0.7.4",
+    "nyc": "^14.1.1",
+    "prettier": "^1.18.2",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2"
+  }
+}
