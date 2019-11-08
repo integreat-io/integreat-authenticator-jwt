@@ -22,6 +22,16 @@ Install from npm:
 npm install integreat-authenticator-jwt
 ```
 
+The authenticator supports the following options:
+
+- `key`: The key to sign the JWT with. Required
+- `algorithm`: The algorithm to sign with. Default `HS256`
+- `subPath`: A dot notation path into the request object, to get the JWT sub
+  claim
+- `audience`: The JWT audience claim. Required
+- `expiresIn`: The expiration time for the JWT, as a ms string. When not set,
+  the token will never expire
+
 ### Running the tests
 
 The tests can be run with `npm test`.
@@ -38,3 +48,7 @@ requests.
 This project is licensed under the ISC License - see the
 [LICENSE](https://github.com/integreat-io/integreat-authenticator-jwt/blob/master/LICENSE)
 file for details.
+
+```
+
+```
