@@ -1,6 +1,6 @@
 {
   "name": "integreat-authenticator-jwt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "JWT authenticator for Integreat",
   "author": "Kjell-Morten Bratsberg Thorsen <post@kjellmorten.no>",
   "license": "ISC",
@@ -37,19 +37,19 @@
     "ms": "^2.1.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.6.1",
-    "@typescript-eslint/parser": "^2.6.1",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
     "ava": "^2.4.0",
-    "coveralls": "^3.0.7",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
+    "coveralls": "^3.0.9",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-security": "^1.4.0",
-    "integreat": "^0.7.4",
+    "integreat": "^0.7.6",
     "nyc": "^14.1.1",
-    "prettier": "^1.18.2",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.7.2"
+    "prettier": "^1.19.1",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.3"
   }
 }
