@@ -1,9 +1,11 @@
 import test from 'ava'
 import jwt = require('jsonwebtoken')
 
-import authenticator from '.'
+import authFn from '.'
 
 // Setup
+
+const authenticator = authFn()
 
 type Dictionary = { [key: string]: string | number }
 

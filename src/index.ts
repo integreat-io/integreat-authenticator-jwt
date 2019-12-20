@@ -1,12 +1,16 @@
-import jwt from './authenticator'
+import jwt, { Logger } from './authenticator'
 
-export = {
-  authenticators: {
-    jwt
-  },
-  default: {
+export = Object.assign(
+  (logger: Logger = console) => ({
     authenticators: {
-      jwt
+      jwt: jwt(logger)
     }
+  }),
+  {
+    default: (logger: Logger = console) => ({
+      authenticators: {
+        jwt: jwt(logger)
+      }
+    })
   }
-}
+)

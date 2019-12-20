@@ -1,6 +1,8 @@
 import test from 'ava'
 
-import resources from '..'
+import resourcesFn from '..'
+
+const resources = resourcesFn()
 
 test('should have resources', t => {
   t.truthy(resources)

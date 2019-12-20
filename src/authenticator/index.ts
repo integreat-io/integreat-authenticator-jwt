@@ -17,6 +17,11 @@ export interface JwtOptions {
   expiresIn?: string
 }
 
+export interface Logger {
+  info: (...args: string[]) => void
+  error: (...args: string[]) => void
+}
+
 const shouldReturnToken = (
   authentication: JwtAuthentication | null
 ): authentication is JwtAuthentication =>
@@ -31,7 +36,7 @@ const refusedAuth = { status: 'refused', token: null, expire: null }
 /**
  * The jwt strategy. The jwt is signed on each authentication
  */
-export default {
+export default (logger?: Logger) => ({
   /**
    * Authenticate and return authentication object if authentication was
    * successful.
@@ -49,6 +54,9 @@ export default {
       sub: dotProp.get(request, subPath)
     }
     if (!payload.sub) {
+      if (logger) {
+        logger.error('Auth refused due to missing subject')
+      }
       return refusedAuth
     }
 
@@ -60,6 +68,9 @@ export default {
       const token = jwt.sign(payload, key, signOptions)
       return { status: 'granted', token, expire }
     } catch (err) {
+      if (logger) {
+        logger.error(`Auth refused. Error: ${err}`)
+      }
       return refusedAuth
     }
   },
@@ -92,4 +103,4 @@ export default {
       ? { Authorization: `Bearer ${authentication.token}` }
       : {}
   }
-}
+})

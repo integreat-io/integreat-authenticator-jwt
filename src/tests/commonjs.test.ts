@@ -1,6 +1,8 @@
 import test from 'ava'
 
-import resources = require('..')
+import resourcesFn = require('..')
+
+const resources = resourcesFn()
 
 test('should have resources', t => {
   t.truthy(resources)
