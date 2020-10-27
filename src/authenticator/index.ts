@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import jwt = require('jsonwebtoken')
 import dotProp = require('dot-prop')
 import ms = require('ms')
@@ -12,7 +13,7 @@ export interface JwtAuthentication {
 export interface JwtOptions {
   audience: string
   key: string
-  algorithm?: string
+  algorithm?: jwt.Algorithm
   subPath?: string
   expiresIn?: string
 }
@@ -47,11 +48,11 @@ export default (logger?: Logger) => ({
       audience,
       algorithm = 'HS256',
       subPath = 'access.ident.id',
-      expiresIn
+      expiresIn,
     } = options
 
     const payload = {
-      sub: dotProp.get(request, subPath)
+      sub: dotProp.get(request, subPath),
     }
     if (!payload.sub) {
       if (logger) {
@@ -102,5 +103,5 @@ export default (logger?: Logger) => ({
     return shouldReturnToken(authentication)
       ? { Authorization: `Bearer ${authentication.token}` }
       : {}
-  }
+  },
 })

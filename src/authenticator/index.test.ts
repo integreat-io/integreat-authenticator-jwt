@@ -12,7 +12,11 @@ type Dictionary = { [key: string]: string | number }
 const parseJwt = (token: string | null) =>
   token ? jwt.decode(token) : { token: null }
 
-const verifyJwt = (token: string | null, key: string, algorithm = 'HS256') => {
+const verifyJwt = (
+  token: string | null,
+  key: string,
+  algorithm: jwt.Algorithm = 'HS256'
+) => {
   if (token) {
     return jwt.verify(token, key, { algorithms: [algorithm] })
   } else {
@@ -112,7 +116,7 @@ test('authenticate should sign with given algorithm', async t => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
-    algorithm: 'HS384'
+    algorithm: 'HS384' as const
   }
 
   const ret = await authenticator.authenticate(options, request)
@@ -143,7 +147,8 @@ test('authenticate should refuse signing fails', async t => {
     algorithm: 'INVALID'
   }
 
-  const ret = await authenticator.authenticate(options, request)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ret = await authenticator.authenticate(options as any, request)
 
   t.is(ret.status, 'refused')
   t.is(ret.token, null)
