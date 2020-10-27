@@ -31,6 +31,7 @@ The authenticator supports the following options:
 - `audience`: The JWT audience claim. Required
 - `expiresIn`: The expiration time for the JWT, as a ms string. When not set,
   the token will never expire
+- `payload`: An object whose properties will be set on the JWT payload
 
 ### Running the tests
 
@@ -48,7 +49,3 @@ requests.
 This project is licensed under the ISC License - see the
 [LICENSE](https://github.com/integreat-io/integreat-authenticator-jwt/blob/master/LICENSE)
 file for details.
-
-```
-
-```

@@ -16,6 +16,7 @@ export interface JwtOptions {
   algorithm?: jwt.Algorithm
   subPath?: string
   expiresIn?: string
+  payload?: Record<string, unknown>
 }
 
 export interface Logger {
@@ -49,9 +50,11 @@ export default (logger?: Logger) => ({
       algorithm = 'HS256',
       subPath = 'access.ident.id',
       expiresIn,
+      payload: optionsPayload = {},
     } = options
 
     const payload = {
+      ...optionsPayload,
       sub: dotProp.get(request, subPath),
     }
     if (!payload.sub) {
