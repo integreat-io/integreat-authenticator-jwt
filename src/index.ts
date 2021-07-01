@@ -28,8 +28,8 @@ export interface Action {
 
 export interface JwtAuthentication {
   status: string
-  token: string | null
-  expire: null
+  token?: string | null
+  expire?: null
 }
 
 export interface JwtOptions {
