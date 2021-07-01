@@ -12,7 +12,7 @@ Signs a JWT token.
 
 ### Prerequisits
 
-Requires node v8.6 and Integreat v0.7.
+Requires node v14 and Integreat v0.8.
 
 ### Installing and using
 
