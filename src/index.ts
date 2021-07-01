@@ -33,8 +33,8 @@ export interface JwtAuthentication {
 }
 
 export interface JwtOptions {
-  audience: string
-  key: string
+  audience?: string
+  key?: string
   algorithm?: jwt.Algorithm
   subPath?: string
   expiresIn?: string
@@ -51,7 +51,7 @@ const shouldReturnToken = (
 ): authentication is JwtAuthentication =>
   authentication?.status === 'granted' && !!authentication.token
 
-const refusedAuth = { status: 'refused', token: null, expire: null }
+const refusedAuth = () => ({ status: 'refused', token: null, expire: null })
 
 // authentication: {
 //   [asFunction: string]: (
@@ -67,7 +67,7 @@ export default (logger?: Logger) => ({
    * Authenticate and return authentication object if authentication was
    * successful.
    */
-  async authenticate(options: JwtOptions, action: Action) {
+  async authenticate(options: JwtOptions | null, action: Action) {
     const {
       key,
       audience,
@@ -75,7 +75,7 @@ export default (logger?: Logger) => ({
       subPath = 'meta.ident.id',
       expiresIn,
       payload: optionsPayload = {},
-    } = options
+    } = options || {}
 
     const payload = {
       ...optionsPayload,
@@ -85,7 +85,12 @@ export default (logger?: Logger) => ({
       if (logger) {
         logger.error('Auth refused due to missing subject', 'autherror')
       }
-      return refusedAuth
+      return refusedAuth()
+    } else if (!key || !audience) {
+      if (logger) {
+        logger.error('Auth refused due to missing key or audience', 'autherror')
+      }
+      return refusedAuth()
     }
 
     const signOptions = expiresIn
@@ -99,7 +104,7 @@ export default (logger?: Logger) => ({
       if (logger) {
         logger.error(`Auth refused. Error: ${err}`)
       }
-      return refusedAuth
+      return refusedAuth()
     }
   },
 

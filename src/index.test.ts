@@ -197,6 +197,24 @@ test('authenticate should log when signing fails', async (t) => {
   t.is(logger.error.callCount, 1)
 })
 
+test('authenticate should refuse when no options', async (t) => {
+  const options = null
+
+  const ret = await authenticator.authenticate(options, action)
+
+  t.is(ret.status, 'refused')
+  t.is(ret.token, null)
+})
+
+test('authenticate should log when no options', async (t) => {
+  const logger = { error: sinon.stub(), info: sinon.stub() }
+  const options = null
+
+  await authFn(logger).authenticate(options, action)
+
+  t.is(logger.error.callCount, 1)
+})
+
 test('asObject should return token', (t) => {
   const authentication = { status: 'granted', token: 't0k3n', expire: null }
   const expected = { token: 't0k3n' }
