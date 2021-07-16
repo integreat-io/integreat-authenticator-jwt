@@ -67,7 +67,14 @@ export default (logger?: Logger) => ({
    * Authenticate and return authentication object if authentication was
    * successful.
    */
-  async authenticate(options: JwtOptions | null, action: Action) {
+  async authenticate(options: JwtOptions | null, action: Action | null) {
+    if (!action) {
+      if (logger) {
+        logger.error('Auth refused due to missing action', 'autherror')
+      }
+      return refusedAuth()
+    }
+
     const {
       key,
       audience,
@@ -113,7 +120,10 @@ export default (logger?: Logger) => ({
    * In the jwt auth, this will alway be false, to trigger authentiation on
    * every request, with a request prop as subject.
    */
-  isAuthenticated(_authentication: JwtAuthentication | null, _action: Action) {
+  isAuthenticated(
+    _authentication: JwtAuthentication | null,
+    _action: Action | null
+  ) {
     return false
   },
 

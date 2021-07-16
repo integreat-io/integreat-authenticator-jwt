@@ -215,6 +215,32 @@ test('authenticate should log when no options', async (t) => {
   t.is(logger.error.callCount, 1)
 })
 
+test('authenticate should refuse when no action', async (t) => {
+  const action = null
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = await authenticator.authenticate(options, action)
+
+  t.is(ret.status, 'refused')
+  t.is(ret.token, null)
+})
+
+test('authenticate should log when no action', async (t) => {
+  const logger = { error: sinon.stub(), info: sinon.stub() }
+  const action = null
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  await authFn(logger).authenticate(options, action)
+
+  t.is(logger.error.callCount, 1)
+})
+
 test('asObject should return token', (t) => {
   const authentication = { status: 'granted', token: 't0k3n', expire: null }
   const expected = { token: 't0k3n' }
