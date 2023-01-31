@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/integreat/integreat-authenticator-jwt#readme",
   "engines": {
-    "node": ">= 14"
+    "node": ">= 18"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.1",
