@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import jwt = require('jsonwebtoken')
 import dotProp = require('dot-prop')
 import ms = require('ms')
