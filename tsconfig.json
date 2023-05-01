@@ -1,1 +1,33 @@
-node_modules/@integreat/ts-dev-setup/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "node16",
+    "moduleResolution": "node16",
+    "moduleDetection": "force",
+    "declaration": true,
+    "resolveJsonModule": false,
+    "sourceMap": true,
+    "noEmitOnError": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "removeComments": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "experimentalResolver": true
+  }
+}
