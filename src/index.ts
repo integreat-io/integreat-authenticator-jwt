@@ -1,6 +1,6 @@
-import jwt = require('jsonwebtoken')
-import dotProp = require('dot-prop')
-import ms = require('ms')
+import jwt from 'jsonwebtoken'
+import { getProperty } from 'dot-prop'
+import ms from 'ms'
 
 interface Response {
   status: string | null
@@ -85,7 +85,7 @@ export default (logger?: Logger) => ({
 
     const payload = {
       ...optionsPayload,
-      sub: dotProp.get(action, subPath),
+      sub: getProperty(action, subPath),
     }
     if (!payload.sub) {
       if (logger) {

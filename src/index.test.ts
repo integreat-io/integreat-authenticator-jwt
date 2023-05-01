@@ -1,8 +1,8 @@
 import test from 'ava'
-import jwt = require('jsonwebtoken')
-import sinon = require('sinon')
+import jwt from 'jsonwebtoken'
+import sinon from 'sinon'
 
-import authFn from '.'
+import authFn from './index.js'
 
 // Setup
 
