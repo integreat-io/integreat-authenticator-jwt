@@ -3,16 +3,14 @@
 Signs a JWT token.
 
 [![npm Version](https://img.shields.io/npm/v/integreat-authenticator-jwt.svg)](https://www.npmjs.com/package/integreat-authenticator-jwt)
-[![Build Status](https://travis-ci.org/integreat-io/integreat-authenticator-jwt.svg?branch=master)](https://travis-ci.org/integreat-io/integreat-authenticator-jwt)
-[![Coverage Status](https://coveralls.io/repos/github/integreat-io/integreat-authenticator-jwt/badge.svg?branch=master)](https://coveralls.io/github/integreat-io/integreat-authenticator-jwt?branch=master)
-[![Dependencies Status](https://tidelift.com/badges/github/integreat-io/integreat-authenticator-jwt?style=flat)](https://tidelift.com/repo/github/integreat-io/integreat-authenticator-jwt)
+![Coverage Status](https://coveralls.io/repos/github/integreat-io/integreat-authenticator-jwt/badge.svg?branch=master)](https://coveralls.io/github/integreat-io/integreat-authenticator-jwt?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6331723a6ff61de5f232/maintainability)](https://codeclimate.com/github/integreat-io/integreat-authenticator-jwt/maintainability)
 
 ## Getting started
 
 ### Prerequisits
 
-Requires node v14 and Integreat v0.8.
+Requires node v18 and Integreat v0.8.
 
 ### Installing and using
 
