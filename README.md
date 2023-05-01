@@ -3,8 +3,7 @@
 Signs a JWT token.
 
 [![npm Version](https://img.shields.io/npm/v/integreat-authenticator-jwt.svg)](https://www.npmjs.com/package/integreat-authenticator-jwt)
-![Coverage Status](https://coveralls.io/repos/github/integreat-io/integreat-authenticator-jwt/badge.svg?branch=master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6331723a6ff61de5f232/maintainability)](https://codeclimate.com/github/integreat-io/integreat-authenticator-jwt/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6cfc3f8c23594ffb7e12/maintainability)](https://codeclimate.com/github/integreat-io/integreat-authenticator-jwt/maintainability)
 
 ## Getting started
 
