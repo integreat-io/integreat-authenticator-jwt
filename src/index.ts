@@ -1,37 +1,14 @@
 import jwt from 'jsonwebtoken'
 import { getProperty } from 'dot-prop'
 import ms from 'ms'
+import type { Authenticator, Authentication } from 'integreat'
 
-interface Response {
-  status: string | null
-}
-
-export interface Ident {
-  id?: string
-  root?: boolean
-  withToken?: string
-  roles?: string[]
-  tokens?: string[]
-}
-
-export interface Meta extends Record<string, unknown> {
-  ident?: Ident
-}
-
-export interface Action {
-  type: string
-  payload: Record<string, unknown>
-  response?: Response
-  meta?: Meta
-}
-
-export interface JwtAuthentication {
-  status: string
+export interface JwtAuthentication extends Authentication {
   token?: string | null
-  expire?: null
+  expire?: number | null
 }
 
-export interface JwtOptions {
+export interface JwtOptions extends Record<string, unknown> {
   audience?: string
   key?: string
   algorithm?: jwt.Algorithm
@@ -40,38 +17,53 @@ export interface JwtOptions {
   payload?: Record<string, unknown>
 }
 
-export interface Logger {
-  info: (...args: string[]) => void
-  error: (...args: string[]) => void
-}
-
 const shouldReturnToken = (
   authentication: JwtAuthentication | null
 ): authentication is JwtAuthentication =>
   authentication?.status === 'granted' && !!authentication.token
 
-const refusedAuth = () => ({ status: 'refused', token: null, expire: null })
+const refusedAuth = (error?: string) => ({
+  status: 'refused',
+  error,
+  token: null,
+  expire: null,
+})
 
-// authentication: {
-//   [asFunction: string]: (
-//     authentication: Authentication | null
-//   ) => Record<string, unknown>
-// }
+function signAuth(
+  payload: Record<string, unknown>,
+  key: string,
+  algorithm: jwt.Algorithm,
+  audience: string,
+  expiresIn?: string
+) {
+  const expire = expiresIn ? Date.now() + ms(expiresIn) : null
+  const options =
+    typeof expiresIn === 'string'
+      ? { algorithm, audience, expiresIn }
+      : { algorithm, audience }
+
+  try {
+    const token = jwt.sign(payload, key, options)
+    return { status: 'granted', token, expire }
+  } catch (err) {
+    return refusedAuth(`Auth refused. ${err}`)
+  }
+}
 
 /**
  * The jwt strategy. The jwt is signed on each authentication
  */
-export default (logger?: Logger) => ({
+const authenticator: Authenticator<JwtAuthentication> = {
   /**
    * Authenticate and return authentication object if authentication was
    * successful.
    */
-  async authenticate(options: JwtOptions | null, action: Action | null) {
+  async authenticate(
+    options: JwtOptions | null,
+    action
+  ): Promise<JwtAuthentication> {
     if (!action) {
-      if (logger) {
-        logger.error('Auth refused due to missing action', 'autherror')
-      }
-      return refusedAuth()
+      return refusedAuth('Auth refused due to missing action')
     }
 
     const {
@@ -83,35 +75,14 @@ export default (logger?: Logger) => ({
       payload: optionsPayload = {},
     } = options || {}
 
-    const payload = {
-      ...optionsPayload,
-      sub: getProperty(action, subPath),
-    }
+    const payload = { ...optionsPayload, sub: getProperty(action, subPath) }
     if (!payload.sub) {
-      if (logger) {
-        logger.error('Auth refused due to missing subject', 'autherror')
-      }
-      return refusedAuth()
+      return refusedAuth('Auth refused due to missing subject')
     } else if (!key || !audience) {
-      if (logger) {
-        logger.error('Auth refused due to missing key or audience', 'autherror')
-      }
-      return refusedAuth()
+      return refusedAuth('Auth refused due to missing key or audience')
     }
 
-    const signOptions = expiresIn
-      ? { algorithm, audience, expiresIn }
-      : { algorithm, audience }
-    const expire = expiresIn ? Date.now() + ms(expiresIn) : null
-    try {
-      const token = jwt.sign(payload, key, signOptions)
-      return { status: 'granted', token, expire }
-    } catch (err) {
-      if (logger) {
-        logger.error(`Auth refused. Error: ${err}`)
-      }
-      return refusedAuth()
-    }
+    return signAuth(payload, key, algorithm, audience, expiresIn)
   },
 
   /**
@@ -119,10 +90,7 @@ export default (logger?: Logger) => ({
    * In the jwt auth, this will alway be false, to trigger authentiation on
    * every request, with a request prop as subject.
    */
-  isAuthenticated(
-    _authentication: JwtAuthentication | null,
-    _action: Action | null
-  ) {
+  isAuthenticated(_authentication, _action) {
     return false
   },
 
@@ -147,4 +115,6 @@ export default (logger?: Logger) => ({
         : {}
     },
   },
-})
+}
+
+export default authenticator

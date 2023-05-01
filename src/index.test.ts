@@ -1,12 +1,9 @@
 import test from 'ava'
 import jwt from 'jsonwebtoken'
-import sinon from 'sinon'
 
-import authFn from './index.js'
+import authenticator from './index.js'
 
 // Setup
-
-const authenticator = authFn()
 
 type Dictionary = { [key: string]: unknown }
 
@@ -54,7 +51,7 @@ test('authenticate should generate jwt token', async (t) => {
   t.is(ret.status, 'granted')
   t.is(ret.expire, null)
   t.is(typeof ret.token, 'string')
-  const payload = parseJwt(ret.token) as Dictionary
+  const payload = parseJwt(ret.token as string) as Dictionary
   t.is(payload.sub, 'johnf')
   t.true((payload.iat as number) >= now - 1)
   t.true((payload.iat as number) < now + 1)
@@ -76,7 +73,7 @@ test('authenticate should use other prop as sub', async (t) => {
 
   const ret = await authenticator.authenticate(options, action)
 
-  const payload = parseJwt(ret.token) as Dictionary
+  const payload = parseJwt(ret.token as string) as Dictionary
   t.is(payload.sub, 'bettyk')
 })
 
@@ -94,7 +91,7 @@ test('authenticate should add payload to JWT payload', async (t) => {
 
   const ret = await authenticator.authenticate(options, action)
 
-  const payload = parseJwt(ret.token) as Dictionary
+  const payload = parseJwt(ret.token as string) as Dictionary
   t.deepEqual(payload.permissions, ['editor'])
 })
 
@@ -108,7 +105,9 @@ test('authenticate should set expire time', async (t) => {
 
   const ret = await authenticator.authenticate(options, action)
 
-  const payload = parseJwt(ret.token) as Dictionary
+  t.is(ret.status, 'granted', ret?.error)
+  const payload = parseJwt(ret.token as string) as Dictionary
+  t.is(typeof payload.exp, 'number')
   t.true((payload.exp as number) >= exp - 1)
   t.true((payload.exp as number) < exp + 1)
   t.true((ret.expire as number) >= exp * 1000 - 1000)
@@ -124,7 +123,7 @@ test('authenticate should sign payload', async (t) => {
   const ret = await authenticator.authenticate(options, action)
 
   t.notThrows(
-    () => verifyJwt(ret.token, 's3cr3t'),
+    () => verifyJwt(ret.token as string, 's3cr3t'),
     'Token is not signed correctly'
   )
 })
@@ -139,7 +138,7 @@ test('authenticate should sign with given algorithm', async (t) => {
   const ret = await authenticator.authenticate(options, action)
 
   t.notThrows(
-    () => verifyJwt(ret.token, 's3cr3t', 'HS384'),
+    () => verifyJwt(ret.token as string, 's3cr3t', 'HS384'),
     'Token is not signed correctly'
   )
 })
@@ -154,19 +153,8 @@ test('authenticate should refuse when no sub', async (t) => {
   const ret = await authenticator.authenticate(options, action)
 
   t.is(ret.status, 'refused')
+  t.is(ret.error, 'Auth refused due to missing subject')
   t.is(ret.token, null)
-})
-
-test('authenticate should log when no sub', async (t) => {
-  const logger = { error: sinon.stub(), info: sinon.stub() }
-  const options = {
-    audience: 'waste-iq',
-    key: 's3cr3t',
-    subPath: 'payload.params.unknown',
-  }
-  await authFn(logger).authenticate(options, action)
-
-  t.is(logger.error.callCount, 1)
 })
 
 test('authenticate should refuse when signing fails', async (t) => {
@@ -180,21 +168,11 @@ test('authenticate should refuse when signing fails', async (t) => {
   const ret = await authenticator.authenticate(options as any, action)
 
   t.is(ret.status, 'refused')
+  t.is(
+    ret.error,
+    'Auth refused. Error: "algorithm" must be a valid string enum value'
+  )
   t.is(ret.token, null)
-})
-
-test('authenticate should log when signing fails', async (t) => {
-  const logger = { error: sinon.stub(), info: sinon.stub() }
-  const options = {
-    audience: 'waste-iq',
-    key: 's3cr3t',
-    algorithm: 'INVALID',
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await authFn(logger).authenticate(options as any, action)
-
-  t.is(logger.error.callCount, 1)
 })
 
 test('authenticate should refuse when no options', async (t) => {
@@ -203,16 +181,8 @@ test('authenticate should refuse when no options', async (t) => {
   const ret = await authenticator.authenticate(options, action)
 
   t.is(ret.status, 'refused')
+  t.is(ret.error, 'Auth refused due to missing key or audience')
   t.is(ret.token, null)
-})
-
-test('authenticate should log when no options', async (t) => {
-  const logger = { error: sinon.stub(), info: sinon.stub() }
-  const options = null
-
-  await authFn(logger).authenticate(options, action)
-
-  t.is(logger.error.callCount, 1)
 })
 
 test('authenticate should refuse when no action', async (t) => {
@@ -225,20 +195,8 @@ test('authenticate should refuse when no action', async (t) => {
   const ret = await authenticator.authenticate(options, action)
 
   t.is(ret.status, 'refused')
+  t.is(ret.error, 'Auth refused due to missing action')
   t.is(ret.token, null)
-})
-
-test('authenticate should log when no action', async (t) => {
-  const logger = { error: sinon.stub(), info: sinon.stub() }
-  const action = null
-  const options = {
-    audience: 'waste-iq',
-    key: 's3cr3t',
-  }
-
-  await authFn(logger).authenticate(options, action)
-
-  t.is(logger.error.callCount, 1)
 })
 
 test('asObject should return token', (t) => {
