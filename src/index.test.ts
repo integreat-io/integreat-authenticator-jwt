@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import test from 'ava'
 import jwt from 'jsonwebtoken'
 
@@ -28,15 +29,42 @@ const action = {
   meta: { ident: { id: 'johnf' } },
 }
 
-// Tests
+// Tests -- extractAuthKey
 
-test('should always return false from isAuthenticated', (t) => {
-  const authentication = { status: 'granted', token: 's0m3t0k3n', expire: null }
+test('should use action ident (sub) as auth key', (t) => {
+  const action = {
+    type: 'GET',
+    payload: { data: null, params: { userid: 'bettyk' } },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
 
-  const ret = authenticator.isAuthenticated(authentication, action)
+  const ret = authenticator.extractAuthKey!(options, action)
 
-  t.false(ret)
+  t.is(ret, 'johnf')
 })
+
+test('should use property given by subPath as auth key', (t) => {
+  const action = {
+    type: 'GET',
+    payload: { data: null, params: { userid: 'bettyk' } },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+    subPath: 'payload.params.userid',
+  }
+
+  const ret = authenticator.extractAuthKey!(options, action)
+
+  t.is(ret, 'bettyk')
+})
+
+// Tests -- authenticate
 
 test('authenticate should generate jwt token', async (t) => {
   const options = {
@@ -50,6 +78,7 @@ test('authenticate should generate jwt token', async (t) => {
   t.truthy(ret)
   t.is(ret.status, 'granted')
   t.is(ret.expire, null)
+  t.is(ret.authKey, 'johnf')
   t.is(typeof ret.token, 'string')
   const payload = parseJwt(ret.token as string) as Dictionary
   t.is(payload.sub, 'johnf')
@@ -75,6 +104,7 @@ test('authenticate should use other prop as sub', async (t) => {
 
   const payload = parseJwt(ret.token as string) as Dictionary
   t.is(payload.sub, 'bettyk')
+  t.is(ret.authKey, 'bettyk')
 })
 
 test('authenticate should add payload to JWT payload', async (t) => {
@@ -199,6 +229,182 @@ test('authenticate should refuse when no action', async (t) => {
   t.is(ret.token, null)
 })
 
+// Tests -- isAuthenticated
+
+test('isAuthenticated should return true for valid authentication', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: 's0m3t0k3n',
+    expire: null,
+    authKey: 'johnf',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.true(ret)
+})
+
+test('isAuthenticated should return false for status refused', (t) => {
+  const authentication = {
+    status: 'refused',
+    token: 's0m3t0k3n',
+    expire: null,
+    authKey: 'johnf',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.false(ret)
+})
+
+test('isAuthenticated should return false when no token', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: undefined,
+    expire: null,
+    authKey: 'johnf',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.false(ret)
+})
+
+test('isAuthenticated should return false when expire is in the past', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: 's0m3t0k3n',
+    expire: 1687632749,
+    authKey: 'johnf',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.false(ret)
+})
+
+test('isAuthenticated should return true when expire is in the future', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: 's0m3t0k3n',
+    expire: Math.round(Date.now() / 1000) + 5 * 60,
+    authKey: 'johnf',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.true(ret)
+})
+
+test('isAuthenticated should return false for wrong authKey', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: 's0m3t0k3n',
+    expire: null,
+    authKey: 'wrong',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.false(ret)
+})
+
+test('isAuthenticated should return true for authKey with other subPath', (t) => {
+  const authentication = {
+    status: 'granted',
+    token: 's0m3t0k3n',
+    expire: null,
+    authKey: 'bettyk',
+  }
+  const action = {
+    type: 'GET',
+    payload: { data: null, params: { userid: 'bettyk' } },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+    subPath: 'payload.params.userid',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.true(ret)
+})
+
+test('isAuthenticated should return false for no authentication', (t) => {
+  const authentication = null
+  const action = {
+    type: 'GET',
+    payload: { data: null },
+    meta: { ident: { id: 'johnf' } },
+  }
+  const options = {
+    audience: 'waste-iq',
+    key: 's3cr3t',
+  }
+
+  const ret = authenticator.isAuthenticated(authentication, options, action)
+
+  t.false(ret)
+})
+
+// Tests -- asObject
+
 test('asObject should return token', (t) => {
   const authentication = { status: 'granted', token: 't0k3n', expire: null }
   const expected = { token: 't0k3n' }
@@ -234,6 +440,8 @@ test('asObject should return empty object when no authentication', (t) => {
 
   t.deepEqual(ret, expected)
 })
+
+// Tests -- asHttpHeaders
 
 test('asHttpHeaders should return auth header with token', (t) => {
   const authentication = { status: 'granted', token: 't0k3n', expire: null }
