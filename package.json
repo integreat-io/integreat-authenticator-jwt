@@ -1,6 +1,6 @@
 {
   "name": "integreat-authenticator-jwt",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "JWT authenticator for Integreat",
   "author": "Kjell-Morten Bratsberg Thorsen <kjellmorten@integreat.io>",
   "license": "ISC",
