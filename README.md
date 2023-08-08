@@ -26,8 +26,9 @@ The authenticator supports the following options:
 - `subPath`: A dot notation path into the request object, to get the JWT sub
   claim
 - `audience`: The JWT audience claim. Required
-- `expiresIn`: The expiration time for the JWT, as a ms string. When not set,
-  the token will never expire
+- `expiresIn`: The expiration time for the JWT, as
+  [a ms string](https://github.com/vercel/ms#readme). When not set, the token
+  will never expire
 - `payload`: An object whose properties will be set on the JWT payload
 
 ### Running the tests
