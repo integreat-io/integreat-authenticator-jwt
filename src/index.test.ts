@@ -140,8 +140,8 @@ test('authenticate should set expire time', async (t) => {
   t.is(typeof payload.exp, 'number')
   t.true((payload.exp as number) >= exp - 1)
   t.true((payload.exp as number) < exp + 1)
-  t.true((ret.expire as number) >= exp * 1000 - 1000)
-  t.true((ret.expire as number) < exp * 1000 + 1000)
+  t.true((ret.expire as number) >= exp * 1000 - 2000) // Should set expire 1s before, to avoid being off by a few milliseconds
+  t.true((ret.expire as number) < exp * 1000)
 })
 
 test('authenticate should sign payload', async (t) => {
@@ -301,7 +301,7 @@ test('isAuthenticated should return false when expire is in the past', (t) => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: 1687632749,
+    expire: 1687632749000,
     authKey: 'johnf',
   }
   const action = {
@@ -323,7 +323,7 @@ test('isAuthenticated should return true when expire is in the future', (t) => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: Math.round(Date.now() / 1000) + 5 * 60,
+    expire: Math.round(Date.now()) + 5 * 60,
     authKey: 'johnf',
   }
   const action = {

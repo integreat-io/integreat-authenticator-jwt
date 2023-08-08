@@ -29,7 +29,7 @@ const refusedAuth = (error?: string) => ({
   expire: null,
 })
 
-function signAuth(
+function createAuthenticationWithSignedJwt(
   payload: Record<string, unknown>,
   key: string,
   algorithm: jwt.Algorithm,
@@ -37,7 +37,7 @@ function signAuth(
   expiresIn?: string,
   authKey?: string
 ) {
-  const expire = expiresIn ? Date.now() + ms(expiresIn) : null
+  const expire = expiresIn ? Date.now() + ms(expiresIn) - 1000 : null // Set expire to 1 second before actual expiration, to avoid being off by some milliseconds
   const options =
     typeof expiresIn === 'string'
       ? { algorithm, audience, expiresIn }
@@ -99,7 +99,14 @@ const authenticator: Authenticator<JwtAuthentication, JwtOptions> = {
       return refusedAuth('Auth refused due to missing key or audience')
     }
 
-    return signAuth(payload, key, algorithm, audience, expiresIn, sub)
+    return createAuthenticationWithSignedJwt(
+      payload,
+      key,
+      algorithm,
+      audience,
+      expiresIn,
+      sub
+    )
   },
 
   /**
@@ -113,7 +120,7 @@ const authenticator: Authenticator<JwtAuthentication, JwtOptions> = {
       authentication &&
       authentication.status === 'granted' &&
       !!authentication.token &&
-      (!authentication.expire || authentication.expire * 1000 >= Date.now())
+      (!authentication.expire || authentication.expire >= Date.now())
     ) {
       const authKey = extractAuthKey(options, action)
       return authentication.authKey === authKey
