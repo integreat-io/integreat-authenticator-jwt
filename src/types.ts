@@ -13,4 +13,5 @@ export interface JwtOptions extends Record<string, unknown> {
   subPath?: string
   expiresIn?: string
   payload?: Record<string, unknown>
+  trustedKeys?: Map<string, string>
 }

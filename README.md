@@ -30,6 +30,9 @@ The authenticator supports the following options:
   [a ms string](https://github.com/vercel/ms#readme). When not set, the token
   will never expire
 - `payload`: An object whose properties will be set on the JWT payload
+- `trustedKeys`: A JavaScript Map of trusted keys used for validating JWTs on
+  incoming actions. This is only relevant for the `validate()` method, and it is
+  also the only option relevant for this method.
 
 ### Running the tests
 
