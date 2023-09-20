@@ -62,7 +62,7 @@ const options = { trustedKeys }
 
 // Tests
 
-test('should return response with token(s) from valid and verified jwt', async (t) => {
+test('should return response with token from valid and verified jwt', async (t) => {
   const action = {
     type: 'GET',
     payload: {
@@ -81,7 +81,7 @@ test('should return response with token(s) from valid and verified jwt', async (
   const expected = {
     status: 'ok',
     access: {
-      ident: { tokens: ['rawreporting.io/googleaddon|johnf@gmail.com'] },
+      ident: { withToken: 'rawreporting.io/googleaddon|johnf@gmail.com' },
     },
   }
 
@@ -109,7 +109,7 @@ test('should set ident from valid and verified jwt from other known issuer', asy
   const expected = {
     status: 'ok',
     access: {
-      ident: { tokens: ['integreat.io|7617840F-1827-4FAB-83D8-4607A770E5B1'] },
+      ident: { withToken: 'integreat.io|7617840F-1827-4FAB-83D8-4607A770E5B1' },
     },
   }
 
@@ -137,7 +137,7 @@ test('should set ident from valid and verified jwt from other known issuer with 
   const expected = {
     status: 'ok',
     access: {
-      ident: { tokens: ['google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C'] },
+      ident: { withToken: 'google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C' },
     },
   }
 
@@ -166,7 +166,7 @@ test('should set ident with tokens from valid and verified jwt with email', asyn
     status: 'ok',
     access: {
       ident: {
-        tokens: [
+        withToken: [
           'google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C',
           'google.com|johnf@gmail.com',
         ],
@@ -199,7 +199,7 @@ test('should set email token when email in jwt is not verified', async (t) => {
     status: 'ok',
     access: {
       ident: {
-        tokens: ['google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C'],
+        withToken: 'google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C',
       },
     },
   }
@@ -228,7 +228,7 @@ test('should remove https in issuer', async (t) => {
   const expected = {
     status: 'ok',
     access: {
-      ident: { tokens: ['rawreporting.io/googleaddon|johnf@gmail.com'] },
+      ident: { withToken: 'rawreporting.io/googleaddon|johnf@gmail.com' },
     },
   }
 

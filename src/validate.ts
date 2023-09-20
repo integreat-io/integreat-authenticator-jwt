@@ -37,6 +37,8 @@ function keyFromJwt(token: string, trustedKeys: Map<string, string>) {
   return keyId ? trustedKeys.get(keyId) : undefined
 }
 
+const firstIfOne = (arr: string[]) => (arr.length === 1 ? arr[0] : arr)
+
 function generateTokens(payload: jwt.JwtPayload) {
   const { iss, sub, email, email_verified } = payload
   const issuer = removeHttps(iss)
@@ -45,7 +47,7 @@ function generateTokens(payload: jwt.JwtPayload) {
   const emailToken = isVerifiedEmail(email, email_verified)
     ? `${issuer}|${email}`
     : undefined
-  return [subToken, emailToken].filter(isToken)
+  return firstIfOne([subToken, emailToken].filter(isToken))
 }
 
 /**
@@ -97,7 +99,7 @@ export default async function validate(
     const tokens = generateTokens(payload)
     if (tokens.length > 0) {
       // JWT is valid, return response with ident with generated tokens
-      return { status: 'ok', access: { ident: { tokens } } }
+      return { status: 'ok', access: { ident: { withToken: tokens } } }
     }
   }
 

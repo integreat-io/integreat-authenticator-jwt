@@ -16,6 +16,19 @@ const action = {
   meta: { ident: { id: 'johnf' } },
 }
 
+// Tests
+
+test('should be an authenticator', (t) => {
+  t.is(typeof authenticator, 'object')
+  t.is(typeof authenticator.extractAuthKey, 'function')
+  t.is(typeof authenticator.authenticate, 'function')
+  t.is(typeof authenticator.isAuthenticated, 'function')
+  t.is(typeof authenticator.validate, 'function')
+  t.is(typeof authenticator.authentication, 'object')
+  t.is(typeof authenticator.authentication.asObject, 'function')
+  t.is(typeof authenticator.authentication.asHttpHeaders, 'function')
+})
+
 // Tests -- extractAuthKey
 
 test('should use action ident (sub) as auth key', (t) => {

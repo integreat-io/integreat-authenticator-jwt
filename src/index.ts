@@ -1,6 +1,7 @@
 import { getProperty } from 'dot-prop'
 import authenticate from './authenticate.js'
 import isAuthenticated from './isAuthenticated.js'
+import validate from './validate.js'
 import type { Authenticator, Action } from 'integreat'
 import type { JwtAuthentication, JwtOptions } from './types.js'
 
@@ -50,6 +51,27 @@ const authenticator: Authenticator<JwtAuthentication, JwtOptions> = {
    */
   isAuthenticated(authentication, options, action) {
     return isAuthenticated(authentication, options, action)
+  },
+
+  /**
+   * Validate authentication object.
+   *
+   * Will fetch the `authorization` header from the action and verify it as a JWT
+   * token. Keys of trusted issuers are provided in the `trustedKeys` Map set in
+   * options. When the JWT is verified against the relevant key, an `ok` response
+   * will be returned with an ident in `access`.
+   *
+   * The ident will have one or more `tokens` set to a concatinated string of
+   * issuer and subject, separated by a pipe character. If the JWT contains a
+   * verified email, the ident will have an extra token with issuer and email. Any
+   * `https://` prefix in the issuer will be removed.
+   *
+   * Note that the `trustedKeys` Map is allowed to be updated at runtime, so that
+   * new keys can be added and removed. The authenticator will never cache or
+   * prepare the keys, so any changes will be reflected immediately.
+   */
+  async validate(authentication, options, action) {
+    return validate(authentication, options, action)
   },
 
   authentication: {
