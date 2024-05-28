@@ -3,7 +3,7 @@ import type { Authentication } from 'integreat'
 
 export interface JwtAuthentication extends Authentication {
   token?: string | null
-  expire?: number | null
+  expire?: number
 }
 
 export interface JwtOptions extends Record<string, unknown> {

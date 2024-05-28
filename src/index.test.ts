@@ -77,7 +77,7 @@ test('authenticate should generate jwt token', async (t) => {
 
   t.truthy(ret)
   t.is(ret.status, 'granted')
-  t.is(ret.expire, null)
+  t.is(ret.expire, undefined)
   t.is(ret.authKey, 'johnf')
   t.is(typeof ret.token, 'string')
   const payload = parseJwt(ret.token as string) as Dictionary
@@ -94,7 +94,7 @@ test('isAuthenticated should return true for valid authentication', (t) => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: null,
+    expire: undefined,
     authKey: 'johnf',
   }
   const action = {
@@ -115,7 +115,11 @@ test('isAuthenticated should return true for valid authentication', (t) => {
 // Tests -- asObject
 
 test('asObject should return token', (t) => {
-  const authentication = { status: 'granted', token: 't0k3n', expire: null }
+  const authentication = {
+    status: 'granted',
+    token: 't0k3n',
+    expire: undefined,
+  }
   const expected = { token: 't0k3n' }
 
   const ret = authenticator.authentication.asObject(authentication)
@@ -124,7 +128,7 @@ test('asObject should return token', (t) => {
 })
 
 test('asObject should return empty object when not granted', (t) => {
-  const authentication = { status: 'refused', token: null, expire: null }
+  const authentication = { status: 'refused', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asObject(authentication)
@@ -133,7 +137,7 @@ test('asObject should return empty object when not granted', (t) => {
 })
 
 test('asObject should return empty object when no token', (t) => {
-  const authentication = { status: 'granted', token: null, expire: null }
+  const authentication = { status: 'granted', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asObject(authentication)
@@ -153,7 +157,11 @@ test('asObject should return empty object when no authentication', (t) => {
 // Tests -- asHttpHeaders
 
 test('asHttpHeaders should return auth header with token', (t) => {
-  const authentication = { status: 'granted', token: 't0k3n', expire: null }
+  const authentication = {
+    status: 'granted',
+    token: 't0k3n',
+    expire: undefined,
+  }
   const expected = { Authorization: 'Bearer t0k3n' }
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
@@ -162,7 +170,7 @@ test('asHttpHeaders should return auth header with token', (t) => {
 })
 
 test('asHttpHeaders should return empty object when not granted', (t) => {
-  const authentication = { status: 'refused', token: null, expire: null }
+  const authentication = { status: 'refused', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
@@ -171,7 +179,7 @@ test('asHttpHeaders should return empty object when not granted', (t) => {
 })
 
 test('asHttpHeaders should return empty object when no token', (t) => {
-  const authentication = { status: 'granted', token: null, expire: null }
+  const authentication = { status: 'granted', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)

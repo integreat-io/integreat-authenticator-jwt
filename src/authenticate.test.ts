@@ -41,7 +41,7 @@ test('authenticate should generate jwt token', async (t) => {
 
   t.truthy(ret)
   t.is(ret.status, 'granted')
-  t.is(ret.expire, null)
+  t.is(ret.expire, undefined)
   t.is(ret.authKey, 'johnf')
   t.is(typeof ret.token, 'string')
   const payload = parseJwt(ret.token as string) as Dictionary

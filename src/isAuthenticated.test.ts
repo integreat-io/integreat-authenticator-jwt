@@ -8,7 +8,7 @@ test('isAuthenticated should return true for valid authentication', (t) => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: null,
+    expire: undefined,
     authKey: 'johnf',
   }
   const action = {
@@ -30,7 +30,7 @@ test('isAuthenticated should return false for status refused', (t) => {
   const authentication = {
     status: 'refused',
     token: 's0m3t0k3n',
-    expire: null,
+    expire: undefined,
     authKey: 'johnf',
   }
   const action = {
@@ -52,7 +52,7 @@ test('isAuthenticated should return false when no token', (t) => {
   const authentication = {
     status: 'granted',
     token: undefined,
-    expire: null,
+    expire: undefined,
     authKey: 'johnf',
   }
   const action = {
@@ -118,7 +118,7 @@ test('isAuthenticated should return false for wrong authKey', (t) => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: null,
+    expire: undefined,
     authKey: 'wrong',
   }
   const action = {
@@ -140,7 +140,7 @@ test('isAuthenticated should return true for authKey with other subPath', (t) =>
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
-    expire: null,
+    expire: undefined,
     authKey: 'bettyk',
   }
   const action = {

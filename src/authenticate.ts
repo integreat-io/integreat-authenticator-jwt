@@ -8,7 +8,7 @@ const refusedAuth = (error?: string) => ({
   status: 'refused',
   error,
   token: null,
-  expire: null,
+  expire: undefined,
 })
 
 function createAuthenticationWithSignedJwt(
@@ -19,7 +19,7 @@ function createAuthenticationWithSignedJwt(
   expiresIn?: string,
   authKey?: string,
 ) {
-  const expire = expiresIn ? Date.now() + ms(expiresIn) - 1000 : null // Set expire to 1 second before actual expiration, to avoid being off by some milliseconds
+  const expire = expiresIn ? Date.now() + ms(expiresIn) - 1000 : undefined // Set expire to 1 second before actual expiration, to avoid being off by some milliseconds
   const options =
     typeof expiresIn === 'string'
       ? { algorithm, audience, expiresIn }
