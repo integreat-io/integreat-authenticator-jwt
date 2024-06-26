@@ -95,18 +95,25 @@ export default async function validate(
     payload = null
   }
 
-  if (isObject(payload)) {
-    const tokens = generateTokens(payload)
-    if (tokens.length > 0) {
-      // JWT is valid, return response with ident with generated tokens
-      return { status: 'ok', access: { ident: { withToken: tokens } } }
-    }
+  if (!isObject(payload)) {
+    // JWT is not valid, return autherror response
+    return createError(
+      'Unauthorized. JWT is not valid',
+      'autherror',
+      'invalidauth',
+    )
   }
 
-  // JWT is not valid, return autherror response
-  return createError(
-    'Unauthorized. Credentials are not valid',
-    'autherror',
-    'invalidauth',
-  )
+  const tokens = generateTokens(payload)
+  if (tokens.length === 0) {
+    // JWT is missing sub or email, return autherror response
+    return createError(
+      'Unauthorized. Credentials are not valid',
+      'autherror',
+      'invalidauth',
+    )
+  }
+
+  // JWT is valid, return response with ident with generated tokens
+  return { status: 'ok', access: { ident: { withToken: tokens } } }
 }

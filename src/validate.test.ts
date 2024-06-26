@@ -282,7 +282,7 @@ test('should return autherror response when jwt is not valid', async (t) => {
   }
   const expected = {
     status: 'autherror',
-    error: 'Unauthorized. Credentials are not valid',
+    error: 'Unauthorized. JWT is not valid',
     reason: 'invalidauth',
   }
 
