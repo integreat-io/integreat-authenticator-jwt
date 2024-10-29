@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/integreat/integreat-authenticator-jwt.git"
+    "url": "git+https://github.com/integreat-io/integreat-authenticator-jwt.git"
   },
   "bugs": {
-    "url": "https://github.com/integreat/integreat-authenticator-jwt/issues"
+    "url": "https://github.com/integreat-io/integreat-authenticator-jwt/issues"
   },
-  "homepage": "https://github.com/integreat/integreat-authenticator-jwt#readme",
+  "homepage": "https://github.com/integreat-io/integreat-authenticator-jwt#readme",
   "engines": {
     "node": ">= 18"
   },
