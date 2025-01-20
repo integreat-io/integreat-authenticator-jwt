@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/ms": "^0.7.34",
+    "@types/ms": "^2.1.0",
     "dot-prop": "^9.0.0",
     "jsonwebtoken": "^9.0.2",
     "ms": "^2.1.3"
