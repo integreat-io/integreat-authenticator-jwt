@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import jwt from 'jsonwebtoken'
 import type { Action, Response } from 'integreat'
 
@@ -6,7 +7,7 @@ import authenticator from './index.js'
 
 // Setup
 
-type Dictionary = { [key: string]: unknown }
+type Dictionary = Record<string, unknown>
 
 const parseJwt = (token: string | null) =>
   token ? jwt.decode(token) : { token: null }
@@ -23,20 +24,20 @@ const dispatch = async (_action: Action): Promise<Response> => ({
 
 // Tests
 
-test('should be an authenticator', (t) => {
-  t.is(typeof authenticator, 'object')
-  t.is(typeof authenticator.extractAuthKey, 'function')
-  t.is(typeof authenticator.authenticate, 'function')
-  t.is(typeof authenticator.isAuthenticated, 'function')
-  t.is(typeof authenticator.validate, 'function')
-  t.is(typeof authenticator.authentication, 'object')
-  t.is(typeof authenticator.authentication.asObject, 'function')
-  t.is(typeof authenticator.authentication.asHttpHeaders, 'function')
+test('should be an authenticator', () => {
+  assert.equal(typeof authenticator, 'object')
+  assert.equal(typeof authenticator.extractAuthKey, 'function')
+  assert.equal(typeof authenticator.authenticate, 'function')
+  assert.equal(typeof authenticator.isAuthenticated, 'function')
+  assert.equal(typeof authenticator.validate, 'function')
+  assert.equal(typeof authenticator.authentication, 'object')
+  assert.equal(typeof authenticator.authentication.asObject, 'function')
+  assert.equal(typeof authenticator.authentication.asHttpHeaders, 'function')
 })
 
 // Tests -- extractAuthKey
 
-test('should use action ident (sub) as auth key', (t) => {
+test('should use action ident (sub) as auth key', () => {
   const action = {
     type: 'GET',
     payload: { data: null, params: { userid: 'bettyk' } },
@@ -47,12 +48,13 @@ test('should use action ident (sub) as auth key', (t) => {
     key: 's3cr3t',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = authenticator.extractAuthKey!(options, action)
 
-  t.is(ret, 'johnf')
+  assert.equal(ret, 'johnf')
 })
 
-test('should use property given by subPath as auth key', (t) => {
+test('should use property given by subPath as auth key', () => {
   const action = {
     type: 'GET',
     payload: { data: null, params: { userid: 'bettyk' } },
@@ -64,14 +66,15 @@ test('should use property given by subPath as auth key', (t) => {
     subPath: 'payload.params.userid',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = authenticator.extractAuthKey!(options, action)
 
-  t.is(ret, 'bettyk')
+  assert.equal(ret, 'bettyk')
 })
 
 // Tests -- authenticate
 
-test('authenticate should generate jwt token', async (t) => {
+test('authenticate should generate jwt token', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -80,22 +83,22 @@ test('authenticate should generate jwt token', async (t) => {
 
   const ret = await authenticator.authenticate(options, action, dispatch, null)
 
-  t.truthy(ret)
-  t.is(ret.status, 'granted')
-  t.is(ret.expire, undefined)
-  t.is(ret.authKey, 'johnf')
-  t.is(typeof ret.token, 'string')
+  assert.ok(ret)
+  assert.equal(ret.status, 'granted')
+  assert.equal(ret.expire, undefined)
+  assert.equal(ret.authKey, 'johnf')
+  assert.equal(typeof ret.token, 'string')
   const payload = parseJwt(ret.token as string) as Dictionary
-  t.is(payload.sub, 'johnf')
-  t.true((payload.iat as number) >= now - 1)
-  t.true((payload.iat as number) < now + 1)
-  t.is(payload.aud, 'waste-iq')
-  t.is(typeof payload.exp, 'undefined')
+  assert.equal(payload.sub, 'johnf')
+  assert.ok((payload.iat as number) >= now - 1)
+  assert.ok((payload.iat as number) < now + 1)
+  assert.equal(payload.aud, 'waste-iq')
+  assert.equal(typeof payload.exp, 'undefined')
 })
 
 // Tests -- isAuthenticated
 
-test('isAuthenticated should return true for valid authentication', (t) => {
+test('isAuthenticated should return true for valid authentication', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -114,12 +117,12 @@ test('isAuthenticated should return true for valid authentication', (t) => {
 
   const ret = authenticator.isAuthenticated(authentication, options, action)
 
-  t.true(ret)
+  assert.ok(ret)
 })
 
 // Tests -- asObject
 
-test('asObject should return token', (t) => {
+test('asObject should return token', () => {
   const authentication = {
     status: 'granted',
     token: 't0k3n',
@@ -129,39 +132,39 @@ test('asObject should return token', (t) => {
 
   const ret = authenticator.authentication.asObject(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asObject should return empty object when not granted', (t) => {
+test('asObject should return empty object when not granted', () => {
   const authentication = { status: 'refused', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asObject(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asObject should return empty object when no token', (t) => {
+test('asObject should return empty object when no token', () => {
   const authentication = { status: 'granted', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asObject(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asObject should return empty object when no authentication', (t) => {
+test('asObject should return empty object when no authentication', () => {
   const authentication = null
   const expected = {}
 
   const ret = authenticator.authentication.asObject(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
 // Tests -- asHttpHeaders
 
-test('asHttpHeaders should return auth header with token', (t) => {
+test('asHttpHeaders should return auth header with token', () => {
   const authentication = {
     status: 'granted',
     token: 't0k3n',
@@ -171,32 +174,32 @@ test('asHttpHeaders should return auth header with token', (t) => {
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asHttpHeaders should return empty object when not granted', (t) => {
+test('asHttpHeaders should return empty object when not granted', () => {
   const authentication = { status: 'refused', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asHttpHeaders should return empty object when no token', (t) => {
+test('asHttpHeaders should return empty object when no token', () => {
   const authentication = { status: 'granted', token: null, expire: undefined }
   const expected = {}
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('asHttpHeaders should return empty object when no authentication', (t) => {
+test('asHttpHeaders should return empty object when no authentication', () => {
   const authentication = null
   const expected = {}
 
   const ret = authenticator.authentication.asHttpHeaders(authentication)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })

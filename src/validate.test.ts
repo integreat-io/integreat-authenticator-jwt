@@ -1,4 +1,5 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import googleWithEmailJWT from './tests/helpers/jwts/googleWithEmail.js'
 import googleWithEmailNotVerifiedJWT from './tests/helpers/jwts/googleWithEmailNotVerified.js'
 import googleWithKidJWT from './tests/helpers/jwts/googleWithKid.js'
@@ -62,7 +63,7 @@ const options = { trustedKeys }
 
 // Tests
 
-test('should return response with token from valid and verified jwt', async (t) => {
+test('should return response with token from valid and verified jwt', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -85,12 +86,13 @@ test('should return response with token from valid and verified jwt', async (t) 
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should set ident from valid and verified jwt from other known issuer', async (t) => {
+test('should set ident from valid and verified jwt from other known issuer', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -113,12 +115,13 @@ test('should set ident from valid and verified jwt from other known issuer', asy
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should set ident from valid and verified jwt from other known issuer with key id (in header) and aud', async (t) => {
+test('should set ident from valid and verified jwt from other known issuer with key id (in header) and aud', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -141,12 +144,13 @@ test('should set ident from valid and verified jwt from other known issuer with 
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should set ident with tokens from valid and verified jwt with email', async (t) => {
+test('should set ident with tokens from valid and verified jwt with email', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -174,12 +178,13 @@ test('should set ident with tokens from valid and verified jwt with email', asyn
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should set email token when email in jwt is not verified', async (t) => {
+test('should set email token when email in jwt is not verified', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -204,12 +209,13 @@ test('should set email token when email in jwt is not verified', async (t) => {
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should remove https in issuer', async (t) => {
+test('should remove https in issuer', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -232,12 +238,13 @@ test('should remove https in issuer', async (t) => {
     },
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should return noaccess response for unknown issuer', async (t) => {
+test('should return noaccess response for unknown issuer', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -259,12 +266,13 @@ test('should return noaccess response for unknown issuer', async (t) => {
     reason: 'invalidauth',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should return autherror response when jwt is not valid', async (t) => {
+test('should return autherror response when jwt is not valid', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -286,12 +294,13 @@ test('should return autherror response when jwt is not valid', async (t) => {
     reason: 'invalidauth',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should return autherror response when jwt is missing sub', async (t) => {
+test('should return autherror response when jwt is missing sub', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -313,12 +322,13 @@ test('should return autherror response when jwt is missing sub', async (t) => {
     reason: 'invalidauth',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should return noaccess when no action', async (t) => {
+test('should return noaccess when no action', async () => {
   const action = null
   const expected = {
     status: 'noaccess',
@@ -326,12 +336,13 @@ test('should return noaccess when no action', async (t) => {
     reason: 'noauth',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })
 
-test('should return noaccess when action has no auth header', async (t) => {
+test('should return noaccess when action has no auth header', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -351,7 +362,8 @@ test('should return noaccess when action has no auth header', async (t) => {
     reason: 'noauth',
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
 
-  t.deepEqual(ret, expected)
+  assert.deepEqual(ret, expected)
 })

@@ -1,11 +1,12 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 import jwt from 'jsonwebtoken'
 
 import authenticate from './authenticate.js'
 
 // Setup
 
-type Dictionary = { [key: string]: unknown }
+type Dictionary = Record<string, unknown>
 
 const parseJwt = (token: string | null) =>
   token ? jwt.decode(token) : { token: null }
@@ -30,7 +31,7 @@ const action = {
 
 // Tests
 
-test('authenticate should generate jwt token', async (t) => {
+test('authenticate should generate jwt token', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -39,20 +40,20 @@ test('authenticate should generate jwt token', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.truthy(ret)
-  t.is(ret.status, 'granted')
-  t.is(ret.expire, undefined)
-  t.is(ret.authKey, 'johnf')
-  t.is(typeof ret.token, 'string')
+  assert.ok(ret)
+  assert.equal(ret.status, 'granted')
+  assert.equal(ret.expire, undefined)
+  assert.equal(ret.authKey, 'johnf')
+  assert.equal(typeof ret.token, 'string')
   const payload = parseJwt(ret.token as string) as Dictionary
-  t.is(payload.sub, 'johnf')
-  t.true((payload.iat as number) >= now - 1)
-  t.true((payload.iat as number) < now + 1)
-  t.is(payload.aud, 'waste-iq')
-  t.is(typeof payload.exp, 'undefined')
+  assert.equal(payload.sub, 'johnf')
+  assert.ok((payload.iat as number) >= now - 1)
+  assert.ok((payload.iat as number) < now + 1)
+  assert.equal(payload.aud, 'waste-iq')
+  assert.equal(typeof payload.exp, 'undefined')
 })
 
-test('authenticate should use other prop as sub', async (t) => {
+test('authenticate should use other prop as sub', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -67,11 +68,11 @@ test('authenticate should use other prop as sub', async (t) => {
   const ret = await authenticate(options, action)
 
   const payload = parseJwt(ret.token as string) as Dictionary
-  t.is(payload.sub, 'bettyk')
-  t.is(ret.authKey, 'bettyk')
+  assert.equal(payload.sub, 'bettyk')
+  assert.equal(ret.authKey, 'bettyk')
 })
 
-test('authenticate should add payload to JWT payload', async (t) => {
+test('authenticate should add payload to JWT payload', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -86,10 +87,10 @@ test('authenticate should add payload to JWT payload', async (t) => {
   const ret = await authenticate(options, action)
 
   const payload = parseJwt(ret.token as string) as Dictionary
-  t.deepEqual(payload.permissions, ['editor'])
+  assert.deepEqual(payload.permissions, ['editor'])
 })
 
-test('authenticate should set expire time', async (t) => {
+test('authenticate should set expire time', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -99,16 +100,16 @@ test('authenticate should set expire time', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.is(ret.status, 'granted', ret?.error)
+  assert.equal(ret.status, 'granted', ret?.error)
   const payload = parseJwt(ret.token as string) as Dictionary
-  t.is(typeof payload.exp, 'number')
-  t.true((payload.exp as number) >= exp - 1)
-  t.true((payload.exp as number) < exp + 1)
-  t.true((ret.expire as number) >= exp * 1000 - 2000) // Should set expire 1s before, to avoid being off by a few milliseconds
-  t.true((ret.expire as number) < exp * 1000)
+  assert.equal(typeof payload.exp, 'number')
+  assert.ok((payload.exp as number) >= exp - 1)
+  assert.ok((payload.exp as number) < exp + 1)
+  assert.ok((ret.expire as number) >= exp * 1000 - 2000) // Should set expire 1s before, to avoid being off by a few milliseconds
+  assert.ok((ret.expire as number) < exp * 1000)
 })
 
-test('authenticate should sign payload', async (t) => {
+test('authenticate should sign payload', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -116,13 +117,13 @@ test('authenticate should sign payload', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.notThrows(
+  assert.doesNotThrow(
     () => verifyJwt(ret.token as string, 's3cr3t'),
     'Token is not signed correctly',
   )
 })
 
-test('authenticate should sign with given algorithm', async (t) => {
+test('authenticate should sign with given algorithm', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -131,13 +132,13 @@ test('authenticate should sign with given algorithm', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.notThrows(
+  assert.doesNotThrow(
     () => verifyJwt(ret.token as string, 's3cr3t', 'HS384'),
     'Token is not signed correctly',
   )
 })
 
-test('authenticate should refuse when no sub', async (t) => {
+test('authenticate should refuse when no sub', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -146,12 +147,12 @@ test('authenticate should refuse when no sub', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.is(ret.status, 'refused')
-  t.is(ret.error, 'Auth refused due to missing subject')
-  t.is(ret.token, null)
+  assert.equal(ret.status, 'refused')
+  assert.equal(ret.error, 'Auth refused due to missing subject')
+  assert.equal(ret.token, null)
 })
 
-test('authenticate should refuse when signing fails', async (t) => {
+test('authenticate should refuse when signing fails', async () => {
   const options = {
     audience: 'waste-iq',
     key: 's3cr3t',
@@ -161,25 +162,25 @@ test('authenticate should refuse when signing fails', async (t) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ret = await authenticate(options as any, action)
 
-  t.is(ret.status, 'refused')
-  t.is(
+  assert.equal(ret.status, 'refused')
+  assert.equal(
     ret.error,
     'Auth refused. Error: "algorithm" must be a valid string enum value',
   )
-  t.is(ret.token, null)
+  assert.equal(ret.token, null)
 })
 
-test('authenticate should refuse when no options', async (t) => {
+test('authenticate should refuse when no options', async () => {
   const options = null
 
   const ret = await authenticate(options, action)
 
-  t.is(ret.status, 'refused')
-  t.is(ret.error, 'Auth refused due to missing key or audience')
-  t.is(ret.token, null)
+  assert.equal(ret.status, 'refused')
+  assert.equal(ret.error, 'Auth refused due to missing key or audience')
+  assert.equal(ret.token, null)
 })
 
-test('authenticate should refuse when no action', async (t) => {
+test('authenticate should refuse when no action', async () => {
   const action = null
   const options = {
     audience: 'waste-iq',
@@ -188,7 +189,7 @@ test('authenticate should refuse when no action', async (t) => {
 
   const ret = await authenticate(options, action)
 
-  t.is(ret.status, 'refused')
-  t.is(ret.error, 'Auth refused due to missing action')
-  t.is(ret.token, null)
+  assert.equal(ret.status, 'refused')
+  assert.equal(ret.error, 'Auth refused due to missing action')
+  assert.equal(ret.token, null)
 })

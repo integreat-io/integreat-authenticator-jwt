@@ -1,10 +1,11 @@
-import test from 'ava'
+import test from 'node:test'
+import assert from 'node:assert/strict'
 
 import isAuthenticated from './isAuthenticated.js'
 
 // Tests
 
-test('isAuthenticated should return true for valid authentication', (t) => {
+test('isAuthenticated should return true for valid authentication', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -23,10 +24,10 @@ test('isAuthenticated should return true for valid authentication', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.true(ret)
+  assert.equal(ret, true)
 })
 
-test('isAuthenticated should return false for status refused', (t) => {
+test('isAuthenticated should return false for status refused', () => {
   const authentication = {
     status: 'refused',
     token: 's0m3t0k3n',
@@ -45,10 +46,10 @@ test('isAuthenticated should return false for status refused', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.false(ret)
+  assert.equal(ret, false)
 })
 
-test('isAuthenticated should return false when no token', (t) => {
+test('isAuthenticated should return false when no token', () => {
   const authentication = {
     status: 'granted',
     token: undefined,
@@ -67,10 +68,10 @@ test('isAuthenticated should return false when no token', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.false(ret)
+  assert.equal(ret, false)
 })
 
-test('isAuthenticated should return false when expire is in the past', (t) => {
+test('isAuthenticated should return false when expire is in the past', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -89,10 +90,10 @@ test('isAuthenticated should return false when expire is in the past', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.false(ret)
+  assert.equal(ret, false)
 })
 
-test('isAuthenticated should return true when expire is in the future', (t) => {
+test('isAuthenticated should return true when expire is in the future', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -111,10 +112,10 @@ test('isAuthenticated should return true when expire is in the future', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.true(ret)
+  assert.equal(ret, true)
 })
 
-test('isAuthenticated should return false for wrong authKey', (t) => {
+test('isAuthenticated should return false for wrong authKey', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -133,10 +134,10 @@ test('isAuthenticated should return false for wrong authKey', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.false(ret)
+  assert.equal(ret, false)
 })
 
-test('isAuthenticated should return true for authKey with other subPath', (t) => {
+test('isAuthenticated should return true for authKey with other subPath', () => {
   const authentication = {
     status: 'granted',
     token: 's0m3t0k3n',
@@ -156,10 +157,10 @@ test('isAuthenticated should return true for authKey with other subPath', (t) =>
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.true(ret)
+  assert.equal(ret, true)
 })
 
-test('isAuthenticated should return false for no authentication', (t) => {
+test('isAuthenticated should return false for no authentication', () => {
   const authentication = null
   const action = {
     type: 'GET',
@@ -173,5 +174,5 @@ test('isAuthenticated should return false for no authentication', (t) => {
 
   const ret = isAuthenticated(authentication, options, action)
 
-  t.false(ret)
+  assert.equal(ret, false)
 })

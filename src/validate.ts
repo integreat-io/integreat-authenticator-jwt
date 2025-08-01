@@ -91,7 +91,7 @@ export default async function validate(
   let payload: string | jwt.JwtPayload | null
   try {
     payload = jwt.verify(token, key)
-  } catch (error) {
+  } catch {
     payload = null
   }
 
