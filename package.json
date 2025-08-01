@@ -33,14 +33,14 @@
     "node": ">= 18"
   },
   "dependencies": {
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/ms": "^0.7.34",
     "dot-prop": "^9.0.0",
     "jsonwebtoken": "^9.0.2",
     "ms": "^2.1.3"
   },
   "devDependencies": {
     "@integreat/ts-dev-setup": "^6.0.4",
-    "integreat": "^1.5.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/ms": "^2.1.0",
+    "integreat": "^1.6.3"
   }
 }

@@ -1,5 +1,6 @@
 import test from 'ava'
 import jwt from 'jsonwebtoken'
+import type { Action, Response } from 'integreat'
 
 import authenticator from './index.js'
 
@@ -15,6 +16,10 @@ const action = {
   payload: { data: null },
   meta: { ident: { id: 'johnf' } },
 }
+
+const dispatch = async (_action: Action): Promise<Response> => ({
+  status: 'ok',
+})
 
 // Tests
 
@@ -73,7 +78,7 @@ test('authenticate should generate jwt token', async (t) => {
   }
   const now = Math.round(Date.now() / 1000)
 
-  const ret = await authenticator.authenticate(options, action)
+  const ret = await authenticator.authenticate(options, action, dispatch, null)
 
   t.truthy(ret)
   t.is(ret.status, 'granted')

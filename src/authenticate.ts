@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { getProperty } from 'dot-prop'
-import ms from 'ms'
+import ms, { StringValue } from 'ms'
 import type { Action } from 'integreat'
 import type { JwtAuthentication, JwtOptions } from './types.js'
 
@@ -19,7 +19,9 @@ function createAuthenticationWithSignedJwt(
   expiresIn?: string,
   authKey?: string,
 ) {
-  const expire = expiresIn ? Date.now() + ms(expiresIn) - 1000 : undefined // Set expire to 1 second before actual expiration, to avoid being off by some milliseconds
+  const expire = expiresIn
+    ? Date.now() + ms(expiresIn as StringValue) - 1000 // Set expire to 1 second before actual expiration, to avoid being off by some milliseconds
+    : undefined
   const options =
     typeof expiresIn === 'string'
       ? { algorithm, audience, expiresIn }
