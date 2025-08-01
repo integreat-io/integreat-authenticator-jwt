@@ -14,4 +14,5 @@ export interface JwtOptions extends Record<string, unknown> {
   expiresIn?: string
   payload?: Record<string, unknown>
   trustedKeys?: Map<string, string>
+  requireEmailVerified?: boolean
 }

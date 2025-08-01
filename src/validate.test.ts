@@ -184,7 +184,7 @@ test('should set ident with tokens from valid and verified jwt with email', asyn
   assert.deepEqual(ret, expected)
 })
 
-test('should set email token when email in jwt is not verified', async () => {
+test('should not set email token when email in jwt is not verified', async () => {
   const action = {
     type: 'GET',
     payload: {
@@ -211,6 +211,41 @@ test('should set email token when email in jwt is not verified', async () => {
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ret = await validate!(authentication, options, action)
+
+  assert.deepEqual(ret, expected)
+})
+
+test('should set email token when email in jwt is not verified and requireEmailVerified is false', async () => {
+  const optionsAllowNonverified = { ...options, requireEmailVerified: false }
+  const action = {
+    type: 'GET',
+    payload: {
+      type: 'table',
+      source: '24so',
+      id: 'order',
+      client: 'client1',
+      pageSize: 2,
+      path: '/',
+      method: 'GET',
+      headers: {
+        authorization: `Bearer ${googleWithEmailNotVerifiedJWT}`,
+      },
+    },
+  }
+  const expected = {
+    status: 'ok',
+    access: {
+      ident: {
+        withToken: [
+          'google.com|C074B1BB-92DB-4E0C-9445-3B8292395F3C',
+          'google.com|johnf@gmail.com',
+        ],
+      },
+    },
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const ret = await validate!(authentication, optionsAllowNonverified, action)
 
   assert.deepEqual(ret, expected)
 })

@@ -3,7 +3,7 @@
 Signs a JWT token.
 
 [![npm Version](https://img.shields.io/npm/v/integreat-authenticator-jwt.svg)](https://www.npmjs.com/package/integreat-authenticator-jwt)
-[![Maintainability](https://api.codeclimate.com/v1/badges/6cfc3f8c23594ffb7e12/maintainability)](https://codeclimate.com/github/integreat-io/integreat-authenticator-jwt/maintainability)
+[![Maintainability](https://qlty.sh/gh/integreat-io/projects/integreat-authenticator-jwt/maintainability.svg)](https://qlty.sh/gh/integreat-io/projects/integreat-authenticator-jwt)
 
 ## Getting started
 
@@ -30,6 +30,10 @@ The authenticator supports the following options:
   [a ms string](https://github.com/vercel/ms#readme). When not set, the token
   will never expire
 - `payload`: An object whose properties will be set on the JWT payload
+- `requireEmailVerified`: When set to `false`, the `email` prop will be used
+  without a `email_verified` prop set to `true` in a JWT payload. Default is
+  `true`, which means that `email` will not be used without a `email_verified`
+  prop.
 - `trustedKeys`: A JavaScript Map of trusted keys used for validating JWTs on
   incoming actions. This is only relevant for the `validate()` method, and it is
   also the only option relevant for this method.

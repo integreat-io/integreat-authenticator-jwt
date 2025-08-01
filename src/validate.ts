@@ -6,8 +6,11 @@ import type { JwtAuthentication, JwtOptions } from './types.js'
 
 const isNonEmptyString = (sub?: string): sub is string =>
   typeof sub === 'string' && sub !== ''
-const isVerifiedEmail = (email?: string, verified?: boolean) =>
-  typeof email === 'string' && verified === true
+const isVerifiedEmail = (
+  email?: string,
+  verified?: boolean,
+  requireEmailVerified = true,
+) => typeof email === 'string' && (verified === true || !requireEmailVerified)
 const isToken = (token?: string): token is string => typeof token === 'string'
 
 function tokenFromAction(action: Action) {
@@ -39,12 +42,19 @@ function keyFromJwt(token: string, trustedKeys: Map<string, string>) {
 
 const firstIfOne = (arr: string[]) => (arr.length === 1 ? arr[0] : arr)
 
-function generateTokens(payload: jwt.JwtPayload) {
+function generateTokens(
+  payload: jwt.JwtPayload,
+  requireEmailVerified: boolean,
+) {
   const { iss, sub, email, email_verified } = payload
   const issuer = removeHttps(iss)
 
   const subToken = isNonEmptyString(sub) ? `${issuer}|${sub}` : undefined
-  const emailToken = isVerifiedEmail(email, email_verified)
+  const emailToken = isVerifiedEmail(
+    email,
+    email_verified,
+    requireEmailVerified,
+  )
     ? `${issuer}|${email}`
     : undefined
   return firstIfOne([subToken, emailToken].filter(isToken))
@@ -70,7 +80,7 @@ export default async function validate(
   options: JwtOptions | null,
   action: Action | null,
 ) {
-  const { trustedKeys = new Map() } = options || {}
+  const { trustedKeys = new Map(), requireEmailVerified = true } = options || {}
 
   // Fetch token from header given in action
   const token = action && tokenFromAction(action)
@@ -104,7 +114,7 @@ export default async function validate(
     )
   }
 
-  const tokens = generateTokens(payload)
+  const tokens = generateTokens(payload, requireEmailVerified)
   if (tokens.length === 0) {
     // JWT is missing sub or email, return autherror response
     return createError(
